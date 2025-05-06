@@ -6,7 +6,7 @@ const addButton = document.querySelector('.profile__add-button');
 let currentIndex = 6;
 
 // функция удаления карточки
-function deleteCard(cardElement) {
+const deleteCard = cardElement => {
     cardElement.remove();
 }
 
@@ -18,6 +18,8 @@ function createCard(cardData) {
     const cardImage = cardElement.querySelector('.card__image');
     cardImage.src = cardData.link
 
+    cardImage.alt = cardData.name
+
     const cardName = cardElement.querySelector('.card__title');
     cardName.textContent = cardData.name
 
@@ -28,14 +30,15 @@ function createCard(cardData) {
         deleteCard(cardElement) 
     });
 
-    cardContainer.appendChild(cardElement);
+    return cardElement;
 }
 
 // добавление карточек
 addButton.addEventListener('click', function addButtonAction() {
-
+    
     if (currentIndex < initialCards.length) {
-        createCard(initialCards[currentIndex])
+        const newCard = createCard(initialCards[currentIndex])
+        cardContainer.appendChild(newCard);
         currentIndex++;
         if (currentIndex === initialCards.length) {
             addButton.disabled = true;
@@ -44,6 +47,7 @@ addButton.addEventListener('click', function addButtonAction() {
 });
 
 // вывод первых 6 карточек
-for (let i = 0; i < 6; i++) {
-    createCard(initialCards[i]);
-}
+initialCards.slice(0, 6).forEach (cardData => {
+    const defaultCards = createCard(cardData);
+    cardContainer.appendChild(defaultCards);
+})
