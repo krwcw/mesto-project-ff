@@ -25,9 +25,9 @@ const editForm = document.forms['edit-profile'];
 const nameInput = editForm.elements.name;
 const descriptionInput = editForm.elements.description;
 
-const openedImagePopup = document.querySelector('.popup_type_image');
-const openedImage = openedImagePopup.querySelector('.popup__image');
-const openedImageCaption = openedImagePopup.querySelector('.popup__caption');
+const popupFullImage = document.querySelector('.popup_type_image');
+const photoPopupFullImage = popupFullImage.querySelector('.popup__image');
+const captionPopupFullImage = popupFullImage.querySelector('.popup__caption');
 
 
 function openPopupProfile () {
@@ -64,11 +64,11 @@ function editFormSubmit() {
 // обработчик открытия изображения
 const handleOpenImage = (imageUrl, imageAlt) => {
 
-    openedImage.src = imageUrl;
-    openedImage.alt = imageAlt;
-    openedImageCaption.textContent = imageAlt;
+    photoPopupFullImage.src = imageUrl;
+    photoPopupFullImage.alt = imageAlt;
+    captionPopupFullImage.textContent = imageAlt;
     
-    openPopup(openedImagePopup);
+    openPopup(popupFullImage);
 };
 
 // слушатель подтверждения формы добавления карточек
