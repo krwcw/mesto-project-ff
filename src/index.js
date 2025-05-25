@@ -1,9 +1,9 @@
 import './index.css'
 import { initialCards } from './scripts/cards';
-import { openPopup, closePopup, handleEscClose, handleOverlayClick } from './scripts/popup';
-import { editForm, nameForm, descriptionForm, editFormSubmit } from './scripts/editFormSubmit';
-import { createCard } from './scripts/createcard';
-
+import { openPopup, closePopup } from './scripts/modal.js';
+import { editForm, editFormSubmit } from './scripts/modal.js';
+import { createCard, handleDeleteCard, handleLikeButton } from './scripts/card';
+import { placeFromSubmit } from './scripts/modal.js';
 
 
 const cardContainer = document.querySelector('.places__list');
@@ -16,22 +16,12 @@ const closeButtons = document.querySelectorAll('.popup__close');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const editPopup = document.querySelector('.popup_type_edit');
 
-
 const placeForm = document.forms['new-place'];
 const namePlace = placeForm.elements['place-name'];
 const linkPlace = placeForm.elements.link;
 
 
-
-
-const handleDeleteCard = cardElement => {
-    cardElement.remove();
-}
-
-const handleLikeButton = likeButton => {
-    likeButton.classList.toggle('card__like-button_is-active');
-}
-
+// обработчик открытия изображения
 const handleOpenImage = (imageUrl, imageAlt) => {
     const imagePopup = document.querySelector('.popup_type_image');
     const popupImage = imagePopup.querySelector('.popup__image');
@@ -41,32 +31,39 @@ const handleOpenImage = (imageUrl, imageAlt) => {
     popupImage.alt = imageAlt;
     popupCaption.textContent = imageAlt;
     
-    // Открываем попап
     openPopup(imagePopup);
 };
 
+// слушатель подтверждения формы добавления карточек
 placeForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
-    const newCardData = {
-        name: namePlace.value,
-        link: linkPlace.value
-    };
+    const newCardData = placeFromSubmit(namePlace.value, linkPlace.value);
     const newCard = createCard(newCardData, handleDeleteCard, handleLikeButton, handleOpenImage);
+    
     cardContainer.prepend(newCard);
     closePopup(newCardPopup);
+    placeForm.reset();
 })
 
+// слушатель подтверждения формы редактирования профиля
+editForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    editFormSubmit();
+    closePopup(editPopup);
+    editForm.reset();
+});
 
+// слушатель кнопки открытия попапа добавления карточек
 addButton.addEventListener('click', () => {
-    placeForm.reset();
     openPopup(newCardPopup);
 })
 
+// слушатель кнопки открытия попапа редактирования профиля
 editButton.addEventListener('click', () => {
-    editForm.reset();
     openPopup(editPopup);
 })
 
+// слушатель кнопок закрытия попапов
 closeButtons.forEach(button => {
     button.addEventListener('click', () => {
         const popup = button.closest('.popup');
@@ -76,13 +73,8 @@ closeButtons.forEach(button => {
     })
 })
 
+// инициализация карточек сохраненных в массиве
 initialCards.forEach (cardData => {
     const defaultCards = createCard(cardData, handleDeleteCard, handleLikeButton, handleOpenImage);
     cardContainer.appendChild(defaultCards);
 })
-
-editForm.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    editFormSubmit();
-    closePopup(editPopup);
-});
