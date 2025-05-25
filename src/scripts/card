@@ -1,3 +1,5 @@
+const cardTemplate = document.querySelector('#card-template').content;
+
 function createCard(cardData, handleDeleteCard, handleLikeButton, handleOpenImage) { 
 
     const cardTemplate = document.querySelector('#card-template').content;

@@ -1,9 +1,7 @@
 import './index.css'
 import { initialCards } from './scripts/cards';
 import { openPopup, closePopup } from './scripts/modal.js';
-import { editForm, editFormSubmit } from './scripts/modal.js';
 import { createCard, handleDeleteCard, handleLikeButton } from './scripts/card';
-import { placeFromSubmit } from './scripts/modal.js';
 
 
 const cardContainer = document.querySelector('.places__list');
@@ -17,27 +15,66 @@ const newCardPopup = document.querySelector('.popup_type_new-card');
 const editPopup = document.querySelector('.popup_type_edit');
 
 const placeForm = document.forms['new-place'];
-const namePlace = placeForm.elements['place-name'];
-const linkPlace = placeForm.elements.link;
+const inputNamePlaceForm = placeForm.elements['place-name'];
+const inputLinkPlaceForm = placeForm.elements.link;
+
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+
+const editForm = document.forms['edit-profile'];
+const nameInput = editForm.elements.name;
+const descriptionInput = editForm.elements.description;
+
+const openedImagePopup = document.querySelector('.popup_type_image');
+const openedImage = openedImagePopup.querySelector('.popup__image');
+const openedImageCaption = openedImagePopup.querySelector('.popup__caption');
+
+
+function openPopupProfile () {
+        nameInput.value = profileTitle.textContent;
+        descriptionInput.value = profileDescription.textContent;
+        openPopup(editPopup);
+}
+
+
+// обработчик формы добавления карточки
+function placeFromSubmit(nameValue, linkValue) {
+
+    const newCardData = {
+        name: nameValue,
+        link: linkValue
+    };
+    
+    return newCardData
+}
+
+
+// обработчик формы редактирования профиля
+function editFormSubmit() {
+
+    const newName = nameInput.value;
+    const newDescription = descriptionInput.value;
+
+
+    profileTitle.textContent = newName;
+    profileDescription.textContent = newDescription;
+}
 
 
 // обработчик открытия изображения
 const handleOpenImage = (imageUrl, imageAlt) => {
-    const imagePopup = document.querySelector('.popup_type_image');
-    const popupImage = imagePopup.querySelector('.popup__image');
-    const popupCaption = imagePopup.querySelector('.popup__caption');
+
+    openedImage.src = imageUrl;
+    openedImage.alt = imageAlt;
+    openedImageCaption.textContent = imageAlt;
     
-    popupImage.src = imageUrl;
-    popupImage.alt = imageAlt;
-    popupCaption.textContent = imageAlt;
-    
-    openPopup(imagePopup);
+    openPopup(openedImagePopup);
 };
 
 // слушатель подтверждения формы добавления карточек
 placeForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
-    const newCardData = placeFromSubmit(namePlace.value, linkPlace.value);
+    const newCardData = placeFromSubmit(inputNamePlaceForm.value, inputLinkPlaceForm.value);
     const newCard = createCard(newCardData, handleDeleteCard, handleLikeButton, handleOpenImage);
     
     cardContainer.prepend(newCard);
@@ -60,8 +97,8 @@ addButton.addEventListener('click', () => {
 
 // слушатель кнопки открытия попапа редактирования профиля
 editButton.addEventListener('click', () => {
-    openPopup(editPopup);
-})
+    openPopupProfile()
+});
 
 // слушатель кнопок закрытия попапов
 closeButtons.forEach(button => {

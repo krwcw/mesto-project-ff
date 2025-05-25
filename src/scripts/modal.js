@@ -1,18 +1,4 @@
-const profileTitle = document.querySelector('.profile__title');
-const profileDescription = document.querySelector('.profile__description');
-
-
-const editForm = document.forms['edit-profile'];
-const nameForm = editForm.elements.name;
-const descriptionForm = editForm.elements.description;
-
-
 function openPopup(popupElement) {
-
-    if (popupElement.classList.contains('popup_type_edit')) {
-        nameForm.value = profileTitle.textContent
-        descriptionForm.value = profileDescription.textContent
-    }
 
     popupElement.classList.add('popup_is-opened', 'popup_is-animated');
     document.addEventListener('keydown', handleEscClose);
@@ -43,29 +29,5 @@ function handleOverlayClick(evt) {
     }
 };
 
-function placeFromSubmit(nameValue, linkValue) {
-
-    const newCardData = {
-        name: nameValue,
-        link: linkValue
-    };
-    
-    return newCardData
-}
-
-
-function editFormSubmit() {
-
-    const newName = nameForm.value;
-    const newDescription = descriptionForm.value;
-
-
-    profileTitle.textContent = newName;
-    profileDescription.textContent = newDescription;
-}
-
-export { editForm, nameForm, descriptionForm, editFormSubmit };
-
-export { placeFromSubmit };
 
 export { openPopup, closePopup, handleEscClose, handleOverlayClick };
