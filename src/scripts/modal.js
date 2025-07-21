@@ -1,10 +1,12 @@
+// открытие попапа
 function openPopup(popupElement) {
 
     popupElement.classList.add('popup_is-opened', 'popup_is-animated');
     document.addEventListener('keydown', handleEscClose);
     popupElement.addEventListener('mousedown', handleOverlayClick);
 };
-  
+
+// закрытие попапа
 function closePopup(popupElement) {
 
     popupElement.classList.remove('popup_is-animated', 'popup_is-opened');
@@ -12,6 +14,7 @@ function closePopup(popupElement) {
     popupElement.removeEventListener('mousedown', handleOverlayClick);
 };
 
+// закрытие по клику esc
 function handleEscClose(evt) {
 
     if (evt.key === 'Escape') {
@@ -21,7 +24,8 @@ function handleEscClose(evt) {
       };
     };
 };
-  
+
+// закрытие по клику по оверлею
 function handleOverlayClick(evt) {
     
     if (evt.target.classList.contains('popup')) {
