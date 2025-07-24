@@ -33,5 +33,9 @@ function handleOverlayClick(evt) {
     }
 };
 
+function renderLoading(button, isLoading, loadingText = 'Сохранение...', defaultText = 'Сохранить') {
+  button.disabled = isLoading;
+  button.textContent = isLoading ? loadingText : defaultText;
+};
 
-export { openPopup, closePopup, handleEscClose, handleOverlayClick };
+export { openPopup, closePopup, handleEscClose, handleOverlayClick, renderLoading };

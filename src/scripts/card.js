@@ -1,4 +1,3 @@
-import { myUserId } from "../index.js";
 import { deleteCard, unlikeCard, likeCard } from "./api.js";
 
 const cardTemplate = document.querySelector("#card-template").content;
@@ -8,7 +7,8 @@ function createCard(
   cardData,
   handleDeleteCard,
   handleLikeButton,
-  handleOpenImage
+  handleOpenImage,
+  myUserId
 ) {
   const cardFragment = cardTemplate.cloneNode(true);
   const cardElement = cardFragment.querySelector(".card");
@@ -41,7 +41,7 @@ function createCard(
   likeCounter.textContent = cardData.likes.length;
 
   likeButton.addEventListener("click", () =>
-    handleLikeButton(likeButton, cardData._id, likeCounter)
+    handleLikeButton(likeButton, cardData._id, likeCounter, myUserId)
   );
 
   cardImage.addEventListener("click", () =>
@@ -63,7 +63,7 @@ const handleDeleteCard = (cardElement, cardId) => {
 };
 
 // обработчик кнопки like
-const handleLikeButton = (likeButton, cardId, likeCounter) => {
+const handleLikeButton = (likeButton, cardId, likeCounter, myUserId) => {
   const isLiked = likeButton.classList.contains("card__like-button_is-active");
   const apiCall = isLiked ? unlikeCard(cardId) : likeCard(cardId);
   const currentLikes = parseInt(likeCounter.textContent);

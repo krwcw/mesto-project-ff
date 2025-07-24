@@ -1,5 +1,5 @@
 import "./index.css";
-import { openPopup, closePopup } from "./scripts/modal.js";
+import { openPopup, closePopup, renderLoading } from "./scripts/modal.js";
 import {
   createCard,
   handleDeleteCard,
@@ -44,6 +44,10 @@ const popupFullImage = document.querySelector(".popup_type_image");
 const photoPopupFullImage = popupFullImage.querySelector(".popup__image");
 const captionPopupFullImage = popupFullImage.querySelector(".popup__caption");
 
+const submitBtnAvatar = profileImageForm.querySelector(".popup__button");
+const submitBtnProfile = editForm.querySelector(".popup__button");
+const submitBtnPlace = placeForm.querySelector(".popup__button");
+
 // базовая конфигурация для валидации
 const validationConfig = {
   formSelector: ".popup__form",
@@ -54,37 +58,31 @@ const validationConfig = {
   errorClass: "popup__error_visible",
 };
 
-export let myUserId = "";
-export let myUserName = "";
+let myUserId = "";
 
-// получаем данные о себе, меняем имя, аватарку и описание
-getUserInfo()
-  .then((profile) => {
-    profileTitle.textContent = profile.name;
-    profileDescription.textContent = profile.about;
-    profileImage.style.backgroundImage = `url('${profile.avatar}')`;
-    myUserId = profile._id;
-    myUserName = profile.name;
-  })
-  .catch((err) => {
-    console.error("Ошибка при загрузке профиля:", err);
-  });
+const initPromises = [getUserInfo(), getInitialCards()];
 
-// получаем карточки от сервера, добавляем их в DOM
-getInitialCards()
-  .then((items) => {
-    items.forEach((cardData) => {
+// инициализируем данные профиля и карточки
+Promise.all(initPromises)
+.then(([userInfo, initialCards]) => {
+  profileTitle.textContent = userInfo.name;
+  profileDescription.textContent = userInfo.about;
+  profileImage.style.backgroundImage = `url('${userInfo.avatar}')`;
+  myUserId = userInfo._id;
+
+  initialCards.forEach((cardData) => {
       const defaultCards = createCard(
         cardData,
         handleDeleteCard,
         handleLikeButton,
-        handleOpenImage
+        handleOpenImage,
+        myUserId
       );
       cardContainer.appendChild(defaultCards);
-    });
-  })
-  .catch((err) => {
-    console.error("Ошибка при загрузке карточек", err);
+    })
+})
+.catch((err) => {
+    console.error("Ошибка инициализации", err);
   });
 
 // включаем валидацию, очищаем валидацию для placeForm и profileImageForm
@@ -102,28 +100,21 @@ function openPopupProfile() {
 
 // обработчик формы добавления карточки
 function placeFormSubmit(nameValue, linkValue) {
-  const submitButton = placeForm.querySelector(".popup__button");
-  const originalText = submitButton.textContent;
-
-  submitButton.textContent = "Сохранение...";
-  submitButton.disabled = true;
+  
+  renderLoading(submitBtnPlace, true, 'Сохранение...', 'Сохранить');
 
   return addNewCard(nameValue, linkValue).finally(() => {
-    submitButton.textContent = originalText;
-    submitButton.disabled = false;
+      renderLoading(submitBtnPlace, false);
   });
 }
 
 // обработчик формы редактирования профиля
 function editFormSubmit() {
-  const submitButton = editForm.querySelector(".popup__button");
-  const originalText = submitButton.textContent;
+
+  renderLoading(submitBtnProfile, true, 'Сохранение...', 'Сохранить');
 
   const newName = nameInput.value;
   const newDescription = descriptionInput.value;
-
-  submitButton.textContent = "Сохранение...";
-  submitButton.disabled = true;
 
   updateUserInfo(newName, newDescription)
     .then((res) => {
@@ -135,24 +126,20 @@ function editFormSubmit() {
       console.log("Ошибка обновления профиля", err);
     })
     .finally(() => {
-      submitButton.textContent = originalText;
-      submitButton.disabled = false;
+      renderLoading(submitBtnProfile, false);
     });
 }
 
 // обработчик формы обновления аватарки
 function profileImageSubmit() {
-  const submitButton = profileImageForm.querySelector(".popup__button");
-  const originalText = submitButton.textContent;
-  const newAvatar = inputAvatarForm.value;
-
-  submitButton.textContent = "Сохранение...";
-  submitButton.disabled = true;
+  
+  renderLoading(submitBtnAvatar, true, 'Сохранение...', 'Сохранить');
 
   updateUserAvatar(newAvatar)
     .then((res) => {
       profileImage.style.backgroundImage = `url('${res.avatar}')`;
       closePopup(newAvatarPopup)
+      clearValidation(profileImageForm, validationConfig);
       profileImageForm.reset();
 
     })
@@ -160,8 +147,7 @@ function profileImageSubmit() {
       console.error("Ошибка при загрузке аватара", err);
     })
     .finally(() => {
-      submitButton.textContent = originalText;
-      submitButton.disabled = false;
+      renderLoading(submitBtnAvatar, false);
     });
 }
 
@@ -183,7 +169,8 @@ placeForm.addEventListener("submit", (evt) => {
         cardData,
         handleDeleteCard,
         handleLikeButton,
-        handleOpenImage
+        handleOpenImage,
+        myUserId
       );
       cardContainer.prepend(newCard);
       closePopup(newCardPopup);
