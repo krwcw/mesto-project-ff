@@ -1,5 +1,5 @@
 import "./index.css";
-import { openPopup, closePopup, renderLoading } from "./scripts/modal.js";
+import { openPopup, closePopup } from "./scripts/modal.js";
 import {
   createCard,
   handleDeleteCard,
@@ -13,6 +13,7 @@ import {
   updateUserAvatar,
   updateUserInfo,
 } from "./scripts/api.js";
+import { renderLoading } from "./scripts/utils.js";
 
 const cardContainer = document.querySelector(".places__list");
 
@@ -134,6 +135,8 @@ function editFormSubmit() {
 function profileImageSubmit() {
   
   renderLoading(submitBtnAvatar, true, 'Сохранение...', 'Сохранить');
+
+  const newAvatar = inputAvatarForm.value;
 
   updateUserAvatar(newAvatar)
     .then((res) => {
